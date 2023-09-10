@@ -18,224 +18,70 @@ ORDER BY 4 DESC;
 
 -- Total Ride Males vs Females
 SELECT 
+    TO_CHAR(start_time, 'Month') AS month_name,
     CASE 
-        WHEN EXTRACT(MONTH FROM start_time) = 1 THEN 'JANUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 2 THEN 'FEBRUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 3 THEN 'MARCH'
-        WHEN EXTRACT(MONTH FROM start_time) = 4 THEN 'APRIL'
-        WHEN EXTRACT(MONTH FROM start_time) = 5 THEN 'MAY'
-        WHEN EXTRACT(MONTH FROM start_time) = 6 THEN 'JUNE'
-        WHEN EXTRACT(MONTH FROM start_time) = 7 THEN 'JULY'
-        WHEN EXTRACT(MONTH FROM start_time) = 8 THEN 'AUGUST'
-        WHEN EXTRACT(MONTH FROM start_time) = 9 THEN 'SEPTEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 10 THEN 'OCTOBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 11 THEN 'NOVEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 12 THEN 'DECEMBER'
-        ELSE 'OTHER'
-		 END AS month 
-	, SUM(gender)
-	,CASE 
-	WHEN gender = 1 THEN 'Male'
-	WHEN gender = 2 THEN 'Female'
-	Else 'Other' END AS gender
-	,EXTRACT(YEAR FROM start_time)
+        WHEN gender = 1 THEN 'Male'
+        WHEN gender = 2 THEN 'Female'
+        ELSE 'Other'
+    END AS gender,
+    EXTRACT(YEAR FROM start_time) AS year,
+    COUNT(*) AS gender_count
 FROM public.citibike_2019
-WHERE gender = 1 OR gender = 2
-GROUP BY 1, 3,4
-ORDER BY gender
+WHERE gender IN (1, 2)
+GROUP BY month_name, gender, year
+ORDER BY gender, month_name, year;
 
 -- Monthly Trip Counts Male vs Female: subscribers
-SELECT 
-    CASE 
-        WHEN EXTRACT(MONTH FROM start_time) = 1 THEN 'JANUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 2 THEN 'FEBRUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 3 THEN 'MARCH'
-        WHEN EXTRACT(MONTH FROM start_time) = 4 THEN 'APRIL'
-        WHEN EXTRACT(MONTH FROM start_time) = 5 THEN 'MAY'
-        WHEN EXTRACT(MONTH FROM start_time) = 6 THEN 'JUNE'
-        WHEN EXTRACT(MONTH FROM start_time) = 7 THEN 'JULY'
-        WHEN EXTRACT(MONTH FROM start_time) = 8 THEN 'AUGUST'
-        WHEN EXTRACT(MONTH FROM start_time) = 9 THEN 'SEPTEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 10 THEN 'OCTOBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 11 THEN 'NOVEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 12 THEN 'DECEMBER'
-        ELSE 'OTHER'
-		 END AS month 
-	, SUM(gender)
-	,CASE 
-	WHEN gender = 1 THEN 'Male'
-	WHEN gender = 2 THEN 'Female'
-	Else 'Other' END AS gender
-	,EXTRACT(YEAR FROM start_time)
-FROM public.citibike_2019
-WHERE gender = 1 OR gender = 2 AND user_type ilike '%subscriber%'
-GROUP BY 1, 3,4
-UNION
-SELECT 
-    CASE 
-        WHEN EXTRACT(MONTH FROM start_time) = 1 THEN 'JANUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 2 THEN 'FEBRUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 3 THEN 'MARCH'
-        WHEN EXTRACT(MONTH FROM start_time) = 4 THEN 'APRIL'
-        WHEN EXTRACT(MONTH FROM start_time) = 5 THEN 'MAY'
-        WHEN EXTRACT(MONTH FROM start_time) = 6 THEN 'JUNE'
-        WHEN EXTRACT(MONTH FROM start_time) = 7 THEN 'JULY'
-        WHEN EXTRACT(MONTH FROM start_time) = 8 THEN 'AUGUST'
-        WHEN EXTRACT(MONTH FROM start_time) = 9 THEN 'SEPTEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 10 THEN 'OCTOBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 11 THEN 'NOVEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 12 THEN 'DECEMBER'
-        ELSE 'OTHER'
-		 END AS month 
-	, SUM(gender)
-	,CASE 
-	WHEN gender = 1 THEN 'Male'
-	WHEN gender = 2 THEN 'Female'
-	Else 'Other' END AS gender
-	,EXTRACT(YEAR FROM start_time)
-FROM public.citibike_2018
-WHERE gender = 1 OR gender = 2 AND user_type ilike '%subscriber%'
-GROUP BY 1, 3,4
-ORDER BY gender
-
+WITH combined_data AS (
+    SELECT * FROM public.citibike_2019
+    UNION ALL
+    SELECT * FROM public.citibike_2018
+)
 
 SELECT 
+    TO_CHAR(start_time, 'Month') AS month_name,
+    COUNT(*) AS gender_count,
     CASE 
-        WHEN EXTRACT(MONTH FROM start_time) = 1 THEN 'JANUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 2 THEN 'FEBRUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 3 THEN 'MARCH'
-        WHEN EXTRACT(MONTH FROM start_time) = 4 THEN 'APRIL'
-        WHEN EXTRACT(MONTH FROM start_time) = 5 THEN 'MAY'
-        WHEN EXTRACT(MONTH FROM start_time) = 6 THEN 'JUNE'
-        WHEN EXTRACT(MONTH FROM start_time) = 7 THEN 'JULY'
-        WHEN EXTRACT(MONTH FROM start_time) = 8 THEN 'AUGUST'
-        WHEN EXTRACT(MONTH FROM start_time) = 9 THEN 'SEPTEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 10 THEN 'OCTOBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 11 THEN 'NOVEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 12 THEN 'DECEMBER'
-        ELSE 'OTHER'
-		 END AS month 
-	, SUM(gender)
-	,CASE 
-	WHEN gender = 1 THEN 'Male'
-	WHEN gender = 2 THEN 'Female'
-	Else 'Other' END AS gender
-	,EXTRACT(YEAR FROM start_time)
-	,user_type
-FROM public.citibike_2019
-WHERE gender = 1 OR gender = 2 AND user_type IN('Customer', 'Subscriber')
-GROUP BY 1, 3,4,5
-UNION
-SELECT 
-    CASE 
-        WHEN EXTRACT(MONTH FROM start_time) = 1 THEN 'JANUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 2 THEN 'FEBRUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 3 THEN 'MARCH'
-        WHEN EXTRACT(MONTH FROM start_time) = 4 THEN 'APRIL'
-        WHEN EXTRACT(MONTH FROM start_time) = 5 THEN 'MAY'
-        WHEN EXTRACT(MONTH FROM start_time) = 6 THEN 'JUNE'
-        WHEN EXTRACT(MONTH FROM start_time) = 7 THEN 'JULY'
-        WHEN EXTRACT(MONTH FROM start_time) = 8 THEN 'AUGUST'
-        WHEN EXTRACT(MONTH FROM start_time) = 9 THEN 'SEPTEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 10 THEN 'OCTOBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 11 THEN 'NOVEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 12 THEN 'DECEMBER'
-        ELSE 'OTHER'
-		 END AS month 
-	, SUM(gender)
-	,CASE 
-	WHEN gender = 1 THEN 'Male'
-	WHEN gender = 2 THEN 'Female'
-	Else 'Other' END AS gender
-	,EXTRACT(YEAR FROM start_time)
-	,user_type
-FROM public.citibike_2018
-WHERE gender = 1 OR gender = 2 AND user_type IN('Customer', 'Subscriber')
-GROUP BY 1, 3,4,5
-ORDER BY gender
+        WHEN gender = 1 THEN 'Male'
+        WHEN gender = 2 THEN 'Female'
+        ELSE 'Other'
+    END AS gender,
+    EXTRACT(YEAR FROM start_time) AS year
+FROM combined_data
+WHERE (gender = 1 OR gender = 2) AND user_type ILIKE '%subscriber%'
+GROUP BY month_name, gender, year
+ORDER BY gender, month_name, year;
 
-SELECT distinct user_type
-FROM public.citibike_2019
+
 -- Percentage of women that ride per month
+WITH combined_data AS (
+    SELECT * FROM public.citibike_2019
+    UNION ALL
+    SELECT * FROM public.citibike_2018
+)
+
 SELECT 
-    CASE 
-        WHEN EXTRACT(MONTH FROM start_time) = 1 THEN 'JANUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 2 THEN 'FEBRUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 3 THEN 'MARCH'
-        WHEN EXTRACT(MONTH FROM start_time) = 4 THEN 'APRIL'
-        WHEN EXTRACT(MONTH FROM start_time) = 5 THEN 'MAY'
-        WHEN EXTRACT(MONTH FROM start_time) = 6 THEN 'JUNE'
-        WHEN EXTRACT(MONTH FROM start_time) = 7 THEN 'JULY'
-        WHEN EXTRACT(MONTH FROM start_time) = 8 THEN 'AUGUST'
-        WHEN EXTRACT(MONTH FROM start_time) = 9 THEN 'SEPTEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 10 THEN 'OCTOBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 11 THEN 'NOVEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 12 THEN 'DECEMBER'
-        ELSE 'OTHER'
-		 END AS month 
-	, SUM(gender) AS "women", user_type
-	,EXTRACT(YEAR FROM start_time)
--- 	, (SELECT COUNT(gender) FROM public.citibike_2019 WHERE gender =2) /COUNT(gender)  AS women_percent 
--- 	,to_char((count(gender) * 100.0
---                           / sum(count(gender)) OVER ()), 'FM990.00" %"') AS percent
-,ROUND(COUNT(gender)/SUM(COUNT(gender)) OVER() *100 ,2)
-FROM public.citibike_2019
-WHERE gender = 2 
-GROUP BY month, user_type, EXTRACT(YEAR FROM start_time)
-UNION
-SELECT 
-    CASE 
-        WHEN EXTRACT(MONTH FROM start_time) = 1 THEN 'JANUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 2 THEN 'FEBRUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 3 THEN 'MARCH'
-        WHEN EXTRACT(MONTH FROM start_time) = 4 THEN 'APRIL'
-        WHEN EXTRACT(MONTH FROM start_time) = 5 THEN 'MAY'
-        WHEN EXTRACT(MONTH FROM start_time) = 6 THEN 'JUNE'
-        WHEN EXTRACT(MONTH FROM start_time) = 7 THEN 'JULY'
-        WHEN EXTRACT(MONTH FROM start_time) = 8 THEN 'AUGUST'
-        WHEN EXTRACT(MONTH FROM start_time) = 9 THEN 'SEPTEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 10 THEN 'OCTOBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 11 THEN 'NOVEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 12 THEN 'DECEMBER'
-        ELSE 'OTHER'
-		 END AS month 
-	, SUM(gender) AS "women", user_type
-	,EXTRACT(YEAR FROM start_time)
--- 	, (SELECT COUNT(gender) FROM public.citibike_2019 WHERE gender =2) /COUNT(gender)  AS women_percent 
--- 	,to_char((count(gender) * 100.0
---                           / sum(count(gender)) OVER ()), 'FM990.00" %"') AS percent
-,ROUND(COUNT(gender)/SUM(COUNT(gender)) OVER() *100 ,2)
-FROM public.citibike_2018
-WHERE gender = 2 
-GROUP BY month, user_type, EXTRACT(YEAR FROM start_time)
-order by user_type
+    TO_CHAR(start_time, 'Month') AS month_name,
+    COUNT(gender) AS women,
+    user_type,
+    EXTRACT(YEAR FROM start_time) AS year,
+    ROUND(COUNT(gender) * 100.0 / SUM(COUNT(gender)) OVER(), 2) AS women_percent
+FROM combined_data
+WHERE gender = 2
+GROUP BY month_name, user_type, year
+ORDER BY user_type, month_name, year;
+
 
 -- Percentage of MEN that ride per month
 SELECT 
-    CASE 
-        WHEN EXTRACT(MONTH FROM start_time) = 1 THEN 'JANUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 2 THEN 'FEBRUARY'
-        WHEN EXTRACT(MONTH FROM start_time) = 3 THEN 'MARCH'
-        WHEN EXTRACT(MONTH FROM start_time) = 4 THEN 'APRIL'
-        WHEN EXTRACT(MONTH FROM start_time) = 5 THEN 'MAY'
-        WHEN EXTRACT(MONTH FROM start_time) = 6 THEN 'JUNE'
-        WHEN EXTRACT(MONTH FROM start_time) = 7 THEN 'JULY'
-        WHEN EXTRACT(MONTH FROM start_time) = 8 THEN 'AUGUST'
-        WHEN EXTRACT(MONTH FROM start_time) = 9 THEN 'SEPTEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 10 THEN 'OCTOBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 11 THEN 'NOVEMBER'
-        WHEN EXTRACT(MONTH FROM start_time) = 12 THEN 'DECEMBER'
-        ELSE 'OTHER'
-		 END AS month 
-	, SUM(gender) AS "women", user_type
--- 	, (SELECT COUNT(gender) FROM public.citibike_2019 WHERE gender =2) /COUNT(gender)  AS women_percent 
--- 	,to_char((count(gender) * 100.0
---                           / sum(count(gender)) OVER ()), 'FM990.00" %"') AS percent
-,ROUND(COUNT(gender)/SUM(COUNT(gender)) OVER() *100 ,2)
+    TO_CHAR(start_time, 'Month') AS month_name,
+    COUNT(gender) AS men,
+    user_type,
+    ROUND(COUNT(gender) * 100.0 / SUM(COUNT(gender)) OVER(), 2) AS men_percent
 FROM public.citibike_2019
-WHERE gender = 1 
-GROUP BY month, user_type
-order by user_type
+WHERE gender = 1
+GROUP BY month_name, user_type
+ORDER BY user_type, month_name;
 
 -- Test for bike_id's
 SELECT COUNT(*)
